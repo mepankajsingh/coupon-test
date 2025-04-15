@@ -37,12 +37,7 @@ export default function Header() {
     <header className={`bg-white sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? "shadow-sm" : ""}`}>
       <div className="container mx-auto px-3 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src="/logo-light.png" 
-              alt="CouponHub Logo" 
-              className="h-6 w-auto" 
-            />
+          <Link to="/" className="flex items-center">
             <span className="text-lg font-bold text-blue-600">
               CouponHub
             </span>
