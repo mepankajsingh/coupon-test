@@ -39,8 +39,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {/* About */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <img src="/logo-light.png" alt="CouponHub Logo" className="h-6 w-auto" />
+            <div className="mb-4">
               <span className="text-lg font-bold text-gray-800">CouponHub</span>
             </div>
             <p className="text-gray-500 text-sm mb-4 leading-relaxed">
