@@ -3,51 +3,88 @@ import { FaPaperPlane } from "react-icons/fa";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the email to your backend
-    console.log("Subscribing email:", email);
-    setSubmitted(true);
-    setEmail("");
-    setTimeout(() => setSubmitted(false), 3000);
+    
+    if (!email.trim()) return;
+    
+    setStatus("loading");
+    
+    try {
+      // Replace with your actual API endpoint
+      const response = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      
+      if (response.ok) {
+        setStatus("success");
+        setMessage("Thank you for subscribing!");
+        setEmail("");
+      } else {
+        const data = await response.json();
+        throw new Error(data.message || "Something went wrong");
+      }
+    } catch (error) {
+      setStatus("error");
+      setMessage(error instanceof Error ? error.message : "Failed to subscribe");
+    }
   };
 
   return (
-    <div className="bg-blue-600 text-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Never Miss a Deal
-          </h2>
-          <p className="text-blue-100 mb-6">
-            Subscribe to our newsletter and get the latest coupons delivered directly to your inbox.
+    <div className="bg-gradient-to-r from-blue-600 to-blue-500 py-12 px-4">
+      <div className="container mx-auto max-w-4xl">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2">Never Miss a Deal</h2>
+          <p className="text-blue-100 max-w-xl mx-auto">
+            Subscribe to our newsletter and get the latest coupons and exclusive offers delivered directly to your inbox.
           </p>
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="email"
-              placeholder="Your email address"
-              className="px-4 py-3 rounded-md flex-grow focus:outline-none text-gray-800"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        </div>
+        
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-grow">
+              <input
+                type="email"
+                placeholder="Your email address"
+                className="w-full px-4 py-3 pl-5 rounded-full border-2 border-transparent focus:outline-none focus:border-white"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === "loading"}
+                required
+              />
+            </div>
             <button
               type="submit"
-              className="bg-white text-blue-600 px-6 py-3 rounded-md hover:bg-blue-50 transition-colors flex items-center justify-center"
-              disabled={submitted}
+              className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-full font-medium transition-colors duration-300 flex items-center justify-center"
+              disabled={status === "loading"}
             >
-              {submitted ? (
-                "Subscribed!"
+              {status === "loading" ? (
+                "Subscribing..."
               ) : (
                 <>
                   Subscribe <FaPaperPlane className="ml-2" />
                 </>
               )}
             </button>
-          </form>
-        </div>
+          </div>
+          
+          {status === "success" && (
+            <p className="mt-3 text-white bg-blue-700 bg-opacity-30 py-2 px-4 rounded-full text-sm">
+              {message}
+            </p>
+          )}
+          
+          {status === "error" && (
+            <p className="mt-3 text-white bg-red-500 bg-opacity-30 py-2 px-4 rounded-full text-sm">
+              {message}
+            </p>
+          )}
+        </form>
       </div>
     </div>
   );
